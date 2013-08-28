@@ -1,3 +1,7 @@
+application.conf
+
+.idea*
+
 *.class
 *.log
 
