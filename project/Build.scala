@@ -10,7 +10,12 @@ object BuildSettings {
     scalaVersion  := "2.10.2",
     resolvers     += "clojars" at "http://clojars.org/repo",
     homepage      := Some(new java.net.URL("http://www.softwaremill.com")),
-    licenses      := ("Apache2", new java.net.URL("http://www.apache.org/licenses/LICENSE-2.0.txt")) :: Nil
+    licenses      := ("Apache2", new java.net.URL("http://www.apache.org/licenses/LICENSE-2.0.txt")) :: Nil,
+    ivyXML :=
+      <dependencies>
+        <exclude org="log4j" artifact="log4j" />
+        <exclude org="org.slf4j" artifact="slf4j-log4j12" />
+      </dependencies>
   ) ++ net.virtualvoid.sbt.graph.Plugin.graphSettings
 }
 
@@ -27,9 +32,7 @@ object Dependencies {
   val logback       = "ch.qos.logback"            % "logback-classic"       % "1.0.9"
   val log4jOverSlf4j = "org.slf4j"                % "log4j-over-slf4j"      % "1.7.2"
 
-  val cassandra     = ("com.datastax.cassandra"    % "cassandra-driver-core" % "1.0.2")
-    .excludeAll(ExclusionRule(organization = "log4j"))
-    .excludeAll(ExclusionRule(organization = "org.slf4j", name = "slf4j-log4j12"))
+  val cassandra     = "com.datastax.cassandra"    % "cassandra-driver-core" % "1.0.2"
 }
 
 object VesplarBuild extends Build {
@@ -46,7 +49,7 @@ object VesplarBuild extends Build {
     "analyzer",
     file("analyzer"),
     settings = buildSettings ++ Seq(
-      libraryDependencies ++= Seq(storm, twitter4j, config, scalalogging, jodaConvert, cassandra, logback, log4jOverSlf4j)
+      libraryDependencies ++= Seq(storm, twitter4j, config, scalalogging, jodaConvert, cassandra, logback, log4jOverSlf4j))
       ++ assemblySettings
   )
 }
