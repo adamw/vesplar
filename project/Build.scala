@@ -11,7 +11,7 @@ object BuildSettings {
     resolvers     += "clojars" at "http://clojars.org/repo",
     homepage      := Some(new java.net.URL("http://www.softwaremill.com")),
     licenses      := ("Apache2", new java.net.URL("http://www.apache.org/licenses/LICENSE-2.0.txt")) :: Nil
-  )
+  ) ++ net.virtualvoid.sbt.graph.Plugin.graphSettings
 }
 
 object Dependencies {
@@ -22,7 +22,14 @@ object Dependencies {
 
   val jodaConvert   = "org.joda"                  % "joda-convert"          % "1.2"
   val config        = "com.typesafe"              % "config"                % "1.0.0"
+
   val scalalogging  = "com.typesafe"              %% "scalalogging-slf4j"   % "1.0.1"
+  val logback       = "ch.qos.logback"            % "logback-classic"       % "1.0.9"
+  val log4jOverSlf4j = "org.slf4j"                % "log4j-over-slf4j"      % "1.7.2"
+
+  val cassandra     = ("com.datastax.cassandra"    % "cassandra-driver-core" % "1.0.2")
+    .excludeAll(ExclusionRule(organization = "log4j"))
+    .excludeAll(ExclusionRule(organization = "org.slf4j", name = "slf4j-log4j12"))
 }
 
 object VesplarBuild extends Build {
@@ -39,8 +46,7 @@ object VesplarBuild extends Build {
     "analyzer",
     file("analyzer"),
     settings = buildSettings ++ Seq(
-      libraryDependencies ++= Seq(storm, twitter4j, config, scalalogging, jodaConvert),
-      mainClass in assembly := Some("org.elasticmq.server.Main"))
+      libraryDependencies ++= Seq(storm, twitter4j, config, scalalogging, jodaConvert, cassandra, logback, log4jOverSlf4j)
       ++ assemblySettings
   )
 }
